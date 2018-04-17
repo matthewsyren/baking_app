@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Baking App</string>
+    
+    <!-- MainActivity -->
+    <string name="refresh">Refresh</string>
+    <string name="error_no_recipes_retrieved">No recipes were retrieved, please try again</string>
+    <string name="error_no_internet_connection">You are not connected to the Internet, please connect and try again</string>
+    <string name="recipe_servings">Servings: %s</string>
+    <string name="content_description_recipe">This is an image of the appropriate recipe, or a normal cake icon if there is no image for the recipe</string>
+</resources>
