@@ -1,0 +1,39 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.matthewsyren.bakingapp.fragments.RecipeDetailFragment">
+        <TextView
+            android:id="@+id/tv_recipe_ingredients_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/recipe_ingredients"
+            style="@style/RecipeDetailsHeading" />
+
+        <TextView
+            android:id="@+id/tv_recipe_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/RecipeDetailsText"
+            android:layout_below="@+id/tv_recipe_ingredients_label"/>
+
+        <TextView
+            android:id="@+id/tv_recipe_steps_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/recipe_steps"
+            style="@style/RecipeDetailsHeading"
+            android:layout_below="@+id/tv_recipe_ingredients"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_recipe_steps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipe_steps_label"
+            android:layout_margin="@dimen/activity_margin" />
+    </RelativeLayout>
+</ScrollView>

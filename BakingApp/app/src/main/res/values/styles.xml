@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -8,4 +7,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="RecipeDetailsHeading">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/recipe_details_heading_text_size</item>
+        <item name="android:layout_marginLeft">@dimen/activity_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_margin</item>
+        <item name="android:layout_marginRight">@dimen/activity_margin</item>
+    </style>
+
+    <style name="RecipeDetailsText">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/recipe_details_text_size</item>
+        <item name="android:layout_marginLeft">@dimen/activity_margin</item>
+        <item name="android:layout_marginRight">@dimen/activity_margin</item>
+    </style>
 </resources>

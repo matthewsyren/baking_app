@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/cl_recipe_steps_list_item"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/list_item_selector">
+    <View
+        android:id="@+id/v_recipe_step_top"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorGrey"/>
+
+    <TextView
+        android:id="@+id/tv_recipe_step"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/RecipeDetailsText"
+        android:paddingTop="@dimen/recipe_steps_padding"
+        android:paddingBottom="@dimen/recipe_steps_padding"
+        app:layout_constraintTop_toBottomOf="@+id/v_recipe_step_top" />
+
+    <View
+        android:id="@+id/v_recipe_step_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_recipe_step"
+        android:background="@color/colorGrey"/>
+</android.support.constraint.ConstraintLayout>

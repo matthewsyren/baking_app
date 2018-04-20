@@ -1,5 +1,6 @@
 package com.matthewsyren.bakingapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,7 +39,7 @@ public class MainActivity
 
     //Variables and constants
     private ArrayList<Recipe> mRecipes;
-    private static final String RECIPES_BUNDLE_KEY = "recipes_bundle_key";
+    public static final String RECIPES_BUNDLE_KEY = "recipes_bundle_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +115,10 @@ public class MainActivity
         }
         else{
             Toast.makeText(getApplicationContext(), getString(R.string.error_no_internet_connection), Toast.LENGTH_LONG).show();
+
+            //Hides ProgressBar and displays the TextView
+            pbRecipes.setVisibility(View.GONE);
+            setRefreshButtonVisibility(View.VISIBLE);
         }
     }
 
@@ -161,7 +166,11 @@ public class MainActivity
 
     @Override
     public void onItemClick(int position) {
-        
+        Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RECIPES_BUNDLE_KEY, mRecipes.get(position));
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     //Attempts to fetch the recipes again

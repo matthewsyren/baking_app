@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 /**
  * Used as a template for a Recipe object
  */
@@ -17,12 +19,10 @@ public class Recipe
     private String servings;
     @SerializedName("image")
     private String imageUrl;
-
-    private Recipe(Parcel in) {
-        name = in.readString();
-        servings = in.readString();
-        imageUrl = in.readString();
-    }
+    @SerializedName("ingredients")
+    private ArrayList<RecipeIngredient> ingredients;
+    @SerializedName("steps")
+    private ArrayList<RecipeStep> steps;
 
     public String getName() {
         return name;
@@ -34,6 +34,22 @@ public class Recipe
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public ArrayList<RecipeIngredient> getIngredients() {
+        return ingredients;
+    }
+
+    public ArrayList<RecipeStep> getSteps() {
+        return steps;
+    }
+
+    private Recipe(Parcel in) {
+        name = in.readString();
+        servings = in.readString();
+        imageUrl = in.readString();
+        ingredients = in.readArrayList(RecipeIngredient.class.getClassLoader());
+        steps = in.readArrayList(RecipeStep.class.getClassLoader());
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -58,5 +74,7 @@ public class Recipe
         dest.writeString(name);
         dest.writeString(servings);
         dest.writeString(imageUrl);
+        dest.writeList(ingredients);
+        dest.writeList(steps);
     }
 }
