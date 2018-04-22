@@ -11,6 +11,11 @@
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorGrey"/>
+
     <FrameLayout
         android:id="@+id/fl_recipe_step"
         android:layout_width="match_parent"

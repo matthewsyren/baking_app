@@ -1,6 +1,5 @@
 package com.matthewsyren.bakingapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -33,10 +32,9 @@ public class RecipeDetailActivity
 
     //Variables
     public static final String RECIPE_BUNDLE_KEY = "recipe_bundle_key";
-    private static final String SELECTED_POSITION_BUNDLE_KEY = "selected_position_bundle_key";
     private Recipe mRecipe;
     private boolean mIsTwoPane = false;
-    private int mSelectedPosition = 0;
+    private boolean mIsDataRestored = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +53,12 @@ public class RecipeDetailActivity
         else{
             Bundle bundle = getIntent().getExtras();
             if(bundle != null && bundle.containsKey(MainActivity.RECIPES_BUNDLE_KEY)){
-                Recipe recipe = bundle.getParcelable(MainActivity.RECIPES_BUNDLE_KEY);
-                mRecipe = recipe;
-                displayRecipeInformation(recipe, mSelectedPosition);
+                mRecipe = bundle.getParcelable(MainActivity.RECIPES_BUNDLE_KEY);
+
+                if(mRecipe != null){
+                    setTitle(mRecipe.getName());
+                    displayRecipeInformation(mRecipe);
+                }
             }
         }
     }
@@ -73,10 +74,14 @@ public class RecipeDetailActivity
 
     //Restores the appropriate data
     private void restoreData(Bundle savedInstanceState){
-        if(savedInstanceState.containsKey(RECIPE_BUNDLE_KEY) && savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
+        mIsDataRestored = true;
+
+        if(savedInstanceState.containsKey(RECIPE_BUNDLE_KEY)){
             mRecipe = savedInstanceState.getParcelable(RECIPE_BUNDLE_KEY);
-            mSelectedPosition = savedInstanceState.getInt(SELECTED_POSITION_BUNDLE_KEY);
-            displayRecipeInformation(mRecipe, mSelectedPosition);
+
+            if(mRecipe != null){
+                setTitle(mRecipe.getName());
+            }
         }
     }
 
@@ -87,8 +92,6 @@ public class RecipeDetailActivity
         if(mRecipe != null){
             outState.putParcelable(RECIPE_BUNDLE_KEY, mRecipe);
         }
-
-        outState.putInt(SELECTED_POSITION_BUNDLE_KEY, mSelectedPosition);
     }
 
     @Override
@@ -104,26 +107,28 @@ public class RecipeDetailActivity
     }
 
     //Displays the recipe information in the appropriate Views
-    private void displayRecipeInformation(Recipe recipe, int position){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
-        recipeDetailFragment.setRecipe(recipe);
-        recipeDetailFragment.setRecyclerViewOnClickListener(this);
-        recipeDetailFragment.setSelectedPosition(position);
-        recipeDetailFragment.setIsTwoPane(mIsTwoPane);
+    private void displayRecipeInformation(Recipe recipe){
+        if(!mIsDataRestored){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
+            recipeDetailFragment.setRecipe(recipe);
+            recipeDetailFragment.setRecyclerViewOnClickListener(this);
+            recipeDetailFragment.setIsTwoPane(mIsTwoPane);
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.fl_recipe_details, recipeDetailFragment)
-                .commit();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fl_recipe_details, recipeDetailFragment)
+                    .commit();
 
-        //Displays the RecipeStepDetails Fragment if the device has a two-pane layout
-        if(mIsTwoPane){
-            displayRecipeStepDetails(mSelectedPosition);
+            //Displays the RecipeStepDetails Fragment if the device has a two-pane layout
+            if(mIsTwoPane && !mIsDataRestored){
+                displayRecipeStepDetails(0);
+            }
         }
     }
 
-    //Displays the step details for the recipe step
+    //Displays the step details for the recipe step in a two-pane layout
     private void displayRecipeStepDetails(int position){
+        FragmentManager fragmentManager = getSupportFragmentManager();
         RecipeStepFragment recipeStepFragment = new RecipeStepFragment();
         RecipeStep recipeStep = mRecipe.getSteps()
                 .get(position);
@@ -131,7 +136,6 @@ public class RecipeDetailActivity
         recipeStepFragment.setRecipeStepDescription(recipeStep.getDescription());
         recipeStepFragment.setVideoUri(recipeStep.getVideoUri());
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fl_recipe_step, recipeStepFragment)
                 .commit();
@@ -139,20 +143,6 @@ public class RecipeDetailActivity
 
     @Override
     public void onItemClick(int position) {
-        mSelectedPosition = position;
-
-        //Displays the details in the appropriate place (based on whether the device is a tablet or not)
-        if(mIsTwoPane){
-            displayRecipeStepDetails(position);
-        }
-        else{
-            Intent intent = new Intent(RecipeDetailActivity.this, RecipeStepActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(RecipeStepActivity.RECIPE_STEP_BUNDLE_KEY,
-                    mRecipe.getSteps()
-                    .get(position));
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }
+        displayRecipeStepDetails(position);
     }
 }

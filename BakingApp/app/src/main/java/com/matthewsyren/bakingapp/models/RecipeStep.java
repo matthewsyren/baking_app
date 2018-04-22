@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Used as a template for a RecipeStep object
  */
@@ -12,7 +14,9 @@ public class RecipeStep
         implements Parcelable {
     private String shortDescription;
     private String description;
+    @SerializedName("videoURL")
     private String videoUrl;
+    @SerializedName("thumbnailURL")
     private String thumbnailUrl;
 
     public String getShortDescription() {

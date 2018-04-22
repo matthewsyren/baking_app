@@ -34,7 +34,7 @@ public class MainActivity
     //View bindings
     @BindView(R.id.tv_recipe_error) TextView tvRecipeError;
     @BindView(R.id.pb_recipes) ProgressBar pbRecipes;
-    @BindView(R.id.b_refresh) Button bRefresh;
+    @BindView(R.id.btn_refresh) Button btnRefresh;
     @BindView(R.id.rv_recipes) RecyclerView rvRecipes;
 
     //Variables and constants
@@ -161,7 +161,7 @@ public class MainActivity
     //Hides or displays the refresh Button and its corresponding TextView
     private void setRefreshButtonVisibility(int visibility){
         tvRecipeError.setVisibility(visibility);
-        bRefresh.setVisibility(visibility);
+        btnRefresh.setVisibility(visibility);
     }
 
     @Override

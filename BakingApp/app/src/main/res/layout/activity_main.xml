@@ -30,11 +30,11 @@
         android:text="@string/error_no_recipes_retrieved"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/b_refresh"
-        android:layout_above="@+id/b_refresh"/>
+        app:layout_constraintBottom_toTopOf="@id/btn_refresh"
+        android:layout_above="@+id/btn_refresh"/>
 
     <Button
-        android:id="@+id/b_refresh"
+        android:id="@+id/btn_refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/refresh"

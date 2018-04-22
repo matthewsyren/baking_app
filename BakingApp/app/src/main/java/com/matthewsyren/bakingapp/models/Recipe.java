@@ -13,15 +13,11 @@ import java.util.ArrayList;
 
 public class Recipe
         implements Parcelable {
-    @SerializedName("name")
     private String name;
-    @SerializedName("servings")
     private String servings;
     @SerializedName("image")
     private String imageUrl;
-    @SerializedName("ingredients")
     private ArrayList<RecipeIngredient> ingredients;
-    @SerializedName("steps")
     private ArrayList<RecipeStep> steps;
 
     public String getName() {

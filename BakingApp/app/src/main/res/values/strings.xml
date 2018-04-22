@@ -12,4 +12,9 @@
     <string name="recipe_ingredient_bullet_point">&#8226; %s %s %s\n</string>
     <string name="recipe_ingredients">Ingredients</string>
     <string name="recipe_steps">Steps</string>
+
+    <!-- RecipeStepActivity -->
+    <string name="next_step">Next</string>
+    <string name="previous_step">Previous</string>
+    <string name="error_no_video_for_step">This step has no video&#8230;\n\n%s</string>
 </resources>

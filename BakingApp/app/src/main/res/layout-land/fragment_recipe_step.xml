@@ -1,21 +1,22 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.matthewsyren.bakingapp.fragments.RecipeStepFragment"
     android:orientation="vertical">
+
     <include
         layout="@layout/simple_exo_player"/>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1">
         <TextView
             android:id="@+id/tv_recipe_step_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/RecipeDetailsText"/>
+            style="@style/RecipeDetailsText"
+            android:visibility="gone"/>
     </ScrollView>
 </LinearLayout>
