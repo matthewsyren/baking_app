@@ -17,4 +17,7 @@
     <string name="next_step">Next</string>
     <string name="previous_step">Previous</string>
     <string name="error_no_video_for_step">This step has no video&#8230;\n\n%s</string>
+
+    <!-- Widget -->
+    <string name="error_no_recipes_retrieved_widget">No recipes were retrieved</string>
 </resources>

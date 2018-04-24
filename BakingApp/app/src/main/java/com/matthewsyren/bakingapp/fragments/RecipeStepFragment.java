@@ -1,6 +1,8 @@
 package com.matthewsyren.bakingapp.fragments;
 
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +31,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.matthewsyren.bakingapp.R;
+import com.matthewsyren.bakingapp.models.RecipeStep;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,16 +52,14 @@ public class RecipeStepFragment
     @BindView(R.id.pb_recipe_video) ProgressBar pbRecipeVideo;
 
     //Variables and constants
-    private Uri mUri;
-    private String mRecipeStepDescription;
+    private RecipeStep mRecipeStep;
     private SimpleExoPlayer mExoPlayer;
     private long mCurrentVideoPosition = 0;
-    private static MediaSessionCompat mMediaSession;
+    private static MediaSessionCompat sMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
     private static final String CURRENT_POSITION_BUNDLE_KEY = "current_position_bundle_key";
-    private static final String RECIPE_STEP_DESCRIPTION_BUNDLE_KEY = "recipe_step_description_bundle_key";
-    private static final String RECIPE_VIDEO_URI_BUNDLE_KEY = "recipe_video_uri_bundle_key";
+    private static final String RECIPE_STEP_BUNDLE_KEY = "recipe_step_bundle_key";
 
     public RecipeStepFragment() {
     }
@@ -71,31 +74,65 @@ public class RecipeStepFragment
             restoreData(savedInstanceState);
         }
 
-        if(mRecipeStepDescription != null && tvRecipeStepDescription != null){
-            tvRecipeStepDescription.setText(mRecipeStepDescription);
-        }
-
-        if(mUri != null){
-            initialiseMediaSession();
-            initialiseExoPlayer(mUri);
-        }
-        else{
-            if(tvRecipeStepDescription != null){
-                tvRecipeStepDescription.setText(
-                        getString(R.string.error_no_video_for_step,
-                                tvRecipeStepDescription.getText())
-                );
-
-                if(tvRecipeStepDescription.getVisibility() == View.GONE){
-                    tvRecipeStepDescription.setVisibility(View.VISIBLE);
-                }
-            }
-
-            epRecipeVideo.setVisibility(View.GONE);
-            pbRecipeVideo.setVisibility(View.GONE);
-        }
+        displayAppropriateViews();
 
         return view;
+    }
+
+    //Displays the appropriate Views based on the RecipeStep's data
+    private void displayAppropriateViews(){
+        //Displays the recipe description
+        if(mRecipeStep.getDescription() != null && tvRecipeStepDescription != null){
+            tvRecipeStepDescription.setText(mRecipeStep
+                    .getDescription());
+        }
+
+        //Displays the video or thumbnail if there is one, otherwise displays a message saying there is no video for the step
+        if(mRecipeStep.getVideoUri() != null){
+            initialiseMediaSession();
+            initialiseExoPlayer(mRecipeStep.getVideoUri());
+        }
+        else{
+            //Displays the thumbnail if there is no video for the step
+            if(mRecipeStep.getThumbnailUrl() != null && !mRecipeStep.getThumbnailUrl().equals("")){
+                Picasso.with(getContext())
+                        .load(mRecipeStep.getThumbnailUrl())
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                if(bitmap != null){
+                                    epRecipeVideo.setDefaultArtwork(bitmap);
+                                    initialiseExoPlayer(null);
+                                    epRecipeVideo.setUseController(false);
+                                }
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
+            }
+            else{
+                //Displays message saying there is no video for the step
+                if(tvRecipeStepDescription != null){
+                    tvRecipeStepDescription.setText(
+                            getString(R.string.error_no_video_for_step,
+                                    tvRecipeStepDescription.getText())
+                    );
+                    epRecipeVideo.setVisibility(View.GONE);
+
+                    if(tvRecipeStepDescription.getVisibility() == View.GONE){
+                        tvRecipeStepDescription.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -103,8 +140,7 @@ public class RecipeStepFragment
         super.onSaveInstanceState(outState);
 
         outState.putLong(CURRENT_POSITION_BUNDLE_KEY, mCurrentVideoPosition);
-        outState.putParcelable(RECIPE_VIDEO_URI_BUNDLE_KEY, mUri);
-        outState.putString(RECIPE_STEP_DESCRIPTION_BUNDLE_KEY, mRecipeStepDescription);
+        outState.putParcelable(RECIPE_STEP_BUNDLE_KEY, mRecipeStep);
     }
 
     //Restores the appropriate data
@@ -113,12 +149,8 @@ public class RecipeStepFragment
             mCurrentVideoPosition = savedInstanceState.getLong(CURRENT_POSITION_BUNDLE_KEY);
         }
 
-        if(savedInstanceState.containsKey(RECIPE_STEP_DESCRIPTION_BUNDLE_KEY)){
-            mRecipeStepDescription = savedInstanceState.getString(RECIPE_STEP_DESCRIPTION_BUNDLE_KEY);
-        }
-
-        if(savedInstanceState.containsKey(RECIPE_VIDEO_URI_BUNDLE_KEY)){
-            mUri = savedInstanceState.getParcelable(RECIPE_VIDEO_URI_BUNDLE_KEY);
+        if(savedInstanceState.containsKey(RECIPE_STEP_BUNDLE_KEY)){
+            mRecipeStep = savedInstanceState.getParcelable(RECIPE_STEP_BUNDLE_KEY);
         }
     }
 
@@ -132,17 +164,13 @@ public class RecipeStepFragment
     public void onResume() {
         super.onResume();
 
-        if(mUri != null){
-            initialiseExoPlayer(mUri);
+        if(mRecipeStep.getVideoUri() != null){
+            initialiseExoPlayer(mRecipeStep.getVideoUri());
         }
     }
 
-    public void setVideoUri(Uri uri){
-        mUri = uri;
-    }
-
-    public void setRecipeStepDescription(String stepDescription){
-        mRecipeStepDescription = stepDescription;
+    public void setRecipeStep(RecipeStep recipeStep){
+        mRecipeStep = recipeStep;
     }
 
     /*
@@ -150,12 +178,12 @@ public class RecipeStepFragment
      * Adapted from the lesson on MediaPlayers
      */
     private void initialiseMediaSession(){
-        mMediaSession = new MediaSessionCompat(getContext(), TAG);
+        sMediaSession = new MediaSessionCompat(getContext(), TAG);
 
-        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS |
+        sMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS |
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
-        mMediaSession.setMediaButtonReceiver(null);
+        sMediaSession.setMediaButtonReceiver(null);
 
         mStateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
@@ -165,9 +193,9 @@ public class RecipeStepFragment
                                 PlaybackStateCompat.ACTION_REWIND
                 );
 
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        mMediaSession.setCallback(new MediaSessionCallback());
-        mMediaSession.setActive(true);
+        sMediaSession.setPlaybackState(mStateBuilder.build());
+        sMediaSession.setCallback(new MediaSessionCallback());
+        sMediaSession.setActive(true);
     }
 
     /*
@@ -182,25 +210,27 @@ public class RecipeStepFragment
                     new DefaultLoadControl()
             );
 
-            mExoPlayer.addListener(this);
             epRecipeVideo.setPlayer(mExoPlayer);
 
-            MediaSource mediaSource = new ExtractorMediaSource(
-                    uri,
-                    new DefaultDataSourceFactory(getContext(), "RecipeStepFragment"),
-                    new DefaultExtractorsFactory(),
-                    null,
-                    null
-            );
+            if(uri != null){
+                mExoPlayer.addListener(this);
 
-            //Restores the user's previous position in the video
-            if(mCurrentVideoPosition > 0){
-                mExoPlayer.seekTo(mCurrentVideoPosition);
-                //todo display textview when no video
+                MediaSource mediaSource = new ExtractorMediaSource(
+                        uri,
+                        new DefaultDataSourceFactory(getContext(), "RecipeStepFragment"),
+                        new DefaultExtractorsFactory(),
+                        null,
+                        null
+                );
+
+                //Restores the user's previous position in the video
+                if(mCurrentVideoPosition > 0){
+                    mExoPlayer.seekTo(mCurrentVideoPosition);
+                }
+
+                mExoPlayer.prepare(mediaSource);
+                mExoPlayer.setPlayWhenReady(true);
             }
-
-            mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
         }
     }
 
@@ -242,7 +272,7 @@ public class RecipeStepFragment
                     mExoPlayer.getCurrentPosition(),
                     1);
         }
-        mMediaSession.setPlaybackState(mStateBuilder.build());
+        sMediaSession.setPlaybackState(mStateBuilder.build());
 
         //Displays ProgressBar when buffering
         if(playbackState == ExoPlayer.STATE_BUFFERING){

@@ -54,7 +54,8 @@ public class RecipeListAdapter
         //Displays the image for the recipe, or a default image if there is no image for the recipe
         if(mRecipes.get(position) != null && !mRecipes.get(position).getImageUrl().equals("")){
             Picasso.with(context)
-                    .load(mRecipes.get(position).getImageUrl())
+                    .load(mRecipes.get(position)
+                            .getImageUrl())
                     .placeholder(R.drawable.ic_cake_black_24dp)
                     .error(R.drawable.ic_cake_black_24dp)
                     .fit()
@@ -65,6 +66,7 @@ public class RecipeListAdapter
             holder.ivRecipeImage.setImageDrawable(context
                     .getResources()
                     .getDrawable(R.drawable.ic_cake_black_24dp));
+
             holder.ivRecipeImage.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
         }
     }

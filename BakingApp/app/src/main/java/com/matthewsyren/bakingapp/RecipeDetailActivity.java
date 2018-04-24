@@ -52,8 +52,8 @@ public class RecipeDetailActivity
         }
         else{
             Bundle bundle = getIntent().getExtras();
-            if(bundle != null && bundle.containsKey(MainActivity.RECIPES_BUNDLE_KEY)){
-                mRecipe = bundle.getParcelable(MainActivity.RECIPES_BUNDLE_KEY);
+            if(bundle != null && bundle.containsKey(RECIPE_BUNDLE_KEY)){
+                mRecipe = bundle.getParcelable(RECIPE_BUNDLE_KEY);
 
                 if(mRecipe != null){
                     setTitle(mRecipe.getName());
@@ -133,8 +133,7 @@ public class RecipeDetailActivity
         RecipeStep recipeStep = mRecipe.getSteps()
                 .get(position);
 
-        recipeStepFragment.setRecipeStepDescription(recipeStep.getDescription());
-        recipeStepFragment.setVideoUri(recipeStep.getVideoUri());
+        recipeStepFragment.setRecipeStep(recipeStep);
 
         fragmentManager.beginTransaction()
                 .replace(R.id.fl_recipe_step, recipeStepFragment)

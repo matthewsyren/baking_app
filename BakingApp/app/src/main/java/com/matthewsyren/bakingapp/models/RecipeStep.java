@@ -27,14 +27,11 @@ public class RecipeStep
         return description;
     }
 
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
+    //Converts the videoUrl field to a Uri and returns it
     public Uri getVideoUri(){
         if(videoUrl == null || videoUrl.equals("")){
             return null;

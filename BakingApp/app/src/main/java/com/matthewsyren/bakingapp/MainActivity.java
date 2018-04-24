@@ -89,7 +89,7 @@ public class MainActivity
         pbRecipes.setVisibility(View.VISIBLE);
         setRefreshButtonVisibility(View.GONE);
 
-        //Attempts to fetch the recipe information using Retrofit if there is an Internet connection
+        //Attempts to fetch the recipe information asynchronously using Retrofit if there is an Internet connection
         if(NetworkUtilities.isOnline(this)){
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(IApiClient.RECIPE_BASE_URL)
@@ -168,7 +168,7 @@ public class MainActivity
     public void onItemClick(int position) {
         Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(RECIPES_BUNDLE_KEY, mRecipes.get(position));
+        bundle.putParcelable(RecipeDetailActivity.RECIPE_BUNDLE_KEY, mRecipes.get(position));
         intent.putExtras(bundle);
         startActivity(intent);
     }

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.matthewsyren.bakingapp.fragments.RecipeStepFragment;
 import com.matthewsyren.bakingapp.models.RecipeStep;
@@ -26,6 +27,9 @@ public class RecipeStepActivity
     @BindView(R.id.btn_previous_step) Button btnPreviousStep;
     @Nullable
     @BindView(R.id.btn_next_step) Button btnNextStep;
+    @Nullable
+    @BindView(R.id.ll_navigate_steps)
+    LinearLayout llNavigateSteps;
 
     //Variables
     private ArrayList<RecipeStep> mRecipeSteps;
@@ -80,7 +84,7 @@ public class RecipeStepActivity
         ActionBar actionBar = getSupportActionBar();
 
         if(actionBar != null){
-            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            if(getDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE){
                 //Hides ActionBar and NotificationBar
                 actionBar.hide();
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -91,6 +95,12 @@ public class RecipeStepActivity
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
         }
+    }
+
+    //Returns the device's orientation
+    private int getDeviceOrientation(){
+        return getResources()
+                .getConfiguration().orientation;
     }
 
     @Override
@@ -144,8 +154,7 @@ public class RecipeStepActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         RecipeStepFragment recipeStepFragment = new RecipeStepFragment();
 
-        recipeStepFragment.setRecipeStepDescription(recipeStep.getDescription());
-        recipeStepFragment.setVideoUri(recipeStep.getVideoUri());
+        recipeStepFragment.setRecipeStep(recipeStep);
 
         fragmentManager.beginTransaction()
                 .replace(R.id.fl_recipe_step, recipeStepFragment, "")
@@ -172,21 +181,34 @@ public class RecipeStepActivity
 
     //Determines whether the next and previous step Buttons should be visible
     private void determineButtonVisibility(){
-        if(btnPreviousStep != null){
-            if(mSelectedStepIndex == 0){
-                btnPreviousStep.setVisibility(View.INVISIBLE);
+        RecipeStep recipeStep = mRecipeSteps.get(mSelectedStepIndex);
+        String thumbnailUrl = recipeStep.getThumbnailUrl();
+
+        //Displays buttons when appropriate
+        if(getDeviceOrientation() == Configuration.ORIENTATION_PORTRAIT ||
+                (recipeStep.getVideoUri() == null && (thumbnailUrl == null || thumbnailUrl.equals("")))){
+            if(btnPreviousStep != null){
+                if(mSelectedStepIndex == 0){
+                    btnPreviousStep.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    btnPreviousStep.setVisibility(View.VISIBLE);
+                }
             }
-            else{
-                btnPreviousStep.setVisibility(View.VISIBLE);
+
+            if(btnNextStep != null){
+                if(mSelectedStepIndex == mRecipeSteps.size() - 1){
+                    btnNextStep.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    btnNextStep.setVisibility(View.VISIBLE);
+                }
             }
         }
-
-        if(btnNextStep != null){
-            if(mSelectedStepIndex == mRecipeSteps.size() - 1){
-                btnNextStep.setVisibility(View.INVISIBLE);
-            }
-            else{
-                btnNextStep.setVisibility(View.VISIBLE);
+        else{
+            //Hides all buttons when there is a video playing in landscape orientation
+            if(llNavigateSteps != null){
+                llNavigateSteps.setVisibility(View.GONE);
             }
         }
     }

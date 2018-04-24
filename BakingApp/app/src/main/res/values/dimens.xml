@@ -13,4 +13,9 @@
     <dimen name="recipe_details_heading_text_size">30sp</dimen>
     <dimen name="recipe_details_text_size">20sp</dimen>
     <dimen name="recipe_steps_padding">10dp</dimen>
+
+    <!-- Widget -->
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="recipe_widget_heading_text_size">30sp</dimen>
+    <dimen name="widget_min_size">100dp</dimen>
 </resources>

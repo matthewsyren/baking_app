@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -20,5 +20,11 @@
         <item name="android:textSize">@dimen/recipe_details_text_size</item>
         <item name="android:layout_marginLeft">@dimen/activity_margin</item>
         <item name="android:layout_marginRight">@dimen/activity_margin</item>
+    </style>
+
+    <style name="RecipeWidgetHeading">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/recipe_widget_heading_text_size</item>
+        <item name="android:layout_margin">@dimen/widget_margin</item>
     </style>
 </resources>
