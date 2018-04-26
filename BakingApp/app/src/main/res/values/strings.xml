@@ -17,6 +17,7 @@
     <string name="next_step">Next</string>
     <string name="previous_step">Previous</string>
     <string name="error_no_video_for_step">This step has no video&#8230;\n\n%s</string>
+    <string name="error_no_internet_connection_video">There is no Internet connection, please reconnect to view the video</string>
 
     <!-- Widget -->
     <string name="error_no_recipes_retrieved_widget">No recipes were retrieved</string>

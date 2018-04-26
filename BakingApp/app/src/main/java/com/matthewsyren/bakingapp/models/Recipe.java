@@ -13,12 +13,26 @@ import java.util.ArrayList;
 
 public class Recipe
         implements Parcelable {
+    private long id;
     private String name;
     private String servings;
     @SerializedName("image")
     private String imageUrl;
     private ArrayList<RecipeIngredient> ingredients;
     private ArrayList<RecipeStep> steps;
+
+    public Recipe(long id, String name, String servings, String imageUrl, ArrayList<RecipeIngredient> ingredients, ArrayList<RecipeStep> steps) {
+        this.id = id;
+        this.name = name;
+        this.servings = servings;
+        this.imageUrl = imageUrl;
+        this.ingredients = ingredients;
+        this.steps = steps;
+    }
+
+    public long getId(){
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -38,6 +52,18 @@ public class Recipe
 
     public ArrayList<RecipeStep> getSteps() {
         return steps;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIngredients(ArrayList<RecipeIngredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setSteps(ArrayList<RecipeStep> steps) {
+        this.steps = steps;
     }
 
     private Recipe(Parcel in) {

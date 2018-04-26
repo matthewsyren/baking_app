@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -32,6 +33,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.matthewsyren.bakingapp.R;
 import com.matthewsyren.bakingapp.models.RecipeStep;
+import com.matthewsyren.bakingapp.utilities.NetworkUtilities;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -65,7 +67,7 @@ public class RecipeStepFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflates the Fragment's layout
         View view = inflater.inflate(R.layout.fragment_recipe_step, container, false);
         ButterKnife.bind(this, view);
@@ -85,6 +87,11 @@ public class RecipeStepFragment
         if(mRecipeStep.getDescription() != null && tvRecipeStepDescription != null){
             tvRecipeStepDescription.setText(mRecipeStep
                     .getDescription());
+        }
+
+        //Displays an error message if there is a video for the step but the device has no Internet connection
+        if(!NetworkUtilities.isOnline(getContext()) && mRecipeStep.getVideoUri() != null){
+            Toast.makeText(getContext(), getString(R.string.error_no_internet_connection_video), Toast.LENGTH_LONG).show();
         }
 
         //Displays the video or thumbnail if there is one, otherwise displays a message saying there is no video for the step
@@ -272,7 +279,10 @@ public class RecipeStepFragment
                     mExoPlayer.getCurrentPosition(),
                     1);
         }
-        sMediaSession.setPlaybackState(mStateBuilder.build());
+
+        if(mStateBuilder != null){
+            sMediaSession.setPlaybackState(mStateBuilder.build());
+        }
 
         //Displays ProgressBar when buffering
         if(playbackState == ExoPlayer.STATE_BUFFERING){

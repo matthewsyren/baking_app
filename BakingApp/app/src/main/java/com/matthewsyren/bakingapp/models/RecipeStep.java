@@ -19,12 +19,23 @@ public class RecipeStep
     @SerializedName("thumbnailURL")
     private String thumbnailUrl;
 
+    public RecipeStep(String shortDescription, String description, String videoUrl, String thumbnailUrl) {
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.videoUrl = videoUrl;
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
     public String getShortDescription() {
         return shortDescription;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
     }
 
     public String getThumbnailUrl() {

@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 import com.matthewsyren.bakingapp.MainActivity;
 import com.matthewsyren.bakingapp.R;
 import com.matthewsyren.bakingapp.RecipeDetailActivity;
+import com.matthewsyren.bakingapp.utilities.NetworkUtilities;
 
 /**
  * Creates a Widget for the home screen
@@ -51,8 +52,11 @@ public class RecipeWidgetProvider
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
         //Updates all Widgets
         for (int appWidgetId : appWidgetIds) {
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.lv_widget_recipes);
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            //Updates the Widget if there is an Internet connection
+            if(NetworkUtilities.isOnline(context)){
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.lv_widget_recipes);
+                updateAppWidget(context, appWidgetManager, appWidgetId);
+            }
         }
     }
 

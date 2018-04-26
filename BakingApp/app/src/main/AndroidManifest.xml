@@ -41,5 +41,9 @@
             android:name=".widgets.WidgetListService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <provider
+            android:authorities="com.matthewsyren.bakingapp"
+            android:name=".data.generated.RecipeProvider"/>
     </application>
 </manifest>
