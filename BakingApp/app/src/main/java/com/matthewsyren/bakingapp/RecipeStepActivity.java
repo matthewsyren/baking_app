@@ -30,6 +30,7 @@ public class RecipeStepActivity
     @BindView(R.id.btn_next_step) Button btnNextStep;
     @Nullable
     @BindView(R.id.ll_navigate_steps) LinearLayout llNavigateSteps;
+    @BindView(R.id.v_navigation_buttons_separator) View vNavigationButtonsSeparator;
 
     //Variables
     private ArrayList<RecipeStep> mRecipeSteps;
@@ -182,6 +183,8 @@ public class RecipeStepActivity
             //Displays the Buttons when appropriate (when the device is in portrait mode or if there is no video or thumbnail to display)
             if(DeviceUtilities.getDeviceOrientation(this) == Configuration.ORIENTATION_PORTRAIT ||
                     (recipeStep.getVideoUri() == null && (thumbnailUrl == null || thumbnailUrl.equals("")))){
+                vNavigationButtonsSeparator.setVisibility(View.VISIBLE);
+
                 if(btnPreviousStep != null){
                     if(mSelectedStepIndex == 0){
                         btnPreviousStep.setVisibility(View.INVISIBLE);
@@ -204,6 +207,7 @@ public class RecipeStepActivity
                 //Hides all buttons when there is a video playing in landscape orientation
                 if(llNavigateSteps != null){
                     llNavigateSteps.setVisibility(View.GONE);
+                    vNavigationButtonsSeparator.setVisibility(View.GONE);
                 }
             }
         }

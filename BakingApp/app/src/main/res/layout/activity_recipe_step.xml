@@ -10,7 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/ll_navigate_steps"/>
+        app:layout_constraintBottom_toTopOf="@+id/v_navigation_buttons_separator"/>
+
+    <View
+        android:id="@+id/v_navigation_buttons_separator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_size"
+        app:layout_constraintBottom_toTopOf="@id/ll_navigate_steps"
+        android:background="@color/colorGrey"/>
 
     <LinearLayout
         android:id="@+id/ll_navigate_steps"
