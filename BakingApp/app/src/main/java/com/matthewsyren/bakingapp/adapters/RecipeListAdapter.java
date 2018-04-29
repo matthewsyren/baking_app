@@ -1,6 +1,7 @@
 package com.matthewsyren.bakingapp.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,14 +34,15 @@ public class RecipeListAdapter
     }
 
     @Override
-    public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.recipe_list_item, parent, false);
         return new RecipeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(RecipeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         Context context = holder.tvRecipeName.getContext();
 
         holder.tvRecipeName.setText(mRecipes.get(position).getName());

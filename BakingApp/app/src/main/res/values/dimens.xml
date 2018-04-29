@@ -3,6 +3,7 @@
     <!-- Shared -->
     <dimen name="progress_bar_size">60dp</dimen>
     <dimen name="activity_margin">16dp</dimen>
+    <dimen name="separator_size">1dp</dimen>
 
     <!-- MainActivity -->
     <dimen name="image_size">60dp</dimen>
@@ -17,5 +18,5 @@
     <!-- Widget -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="recipe_widget_heading_text_size">30sp</dimen>
-    <dimen name="widget_min_size">100dp</dimen>
+    <dimen name="widget_min_size">200dp</dimen>
 </resources>

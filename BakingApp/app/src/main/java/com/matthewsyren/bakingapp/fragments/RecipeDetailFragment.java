@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.matthewsyren.bakingapp.R;
@@ -35,6 +36,7 @@ public class RecipeDetailFragment
     //View bindings
     @BindView(R.id.tv_recipe_ingredients) TextView tvRecipeIngredients;
     @BindView(R.id.rv_recipe_steps) RecyclerView rvRecipeSteps;
+    @BindView(R.id.sv_recipe_details) ScrollView svRecipeDetails;
 
     //Variables and constants
     private Recipe mRecipe;
@@ -44,12 +46,13 @@ public class RecipeDetailFragment
     private static final String SELECTED_POSITION_BUNDLE_KEY = "selected_position_bundle_key";
     private static final String RECIPE_BUNDLE_KEY = "recipe_bundle_key";
     private static final String IS_TWO_PANE_BUNDLE_KEY = "is_two_pane_bundle_key";
+    private static final String SCROLL_VIEW_POSITION_BUNDLE_KEY = "scroll_view_position_bundle_key";
 
     public RecipeDetailFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflates the Fragment's layout
         View view = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         ButterKnife.bind(this, view);
@@ -73,6 +76,14 @@ public class RecipeDetailFragment
         outState.putParcelable(RECIPE_BUNDLE_KEY, mRecipe);
         outState.putBoolean(IS_TWO_PANE_BUNDLE_KEY, mIsTwoPane);
         outState.putInt(SELECTED_POSITION_BUNDLE_KEY, mSelectedPosition);
+
+        /*
+         * Puts the ScrollView information into the Bundle
+         * Adapted from https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        outState.putIntArray(SCROLL_VIEW_POSITION_BUNDLE_KEY, new int[]{
+                svRecipeDetails.getScrollX(),
+                svRecipeDetails.getScrollY()});
     }
 
     //Restores the appropriate data
@@ -94,11 +105,25 @@ public class RecipeDetailFragment
         if(activity != null && activity instanceof IRecyclerViewOnClickListener){
             mRecyclerViewOnClickListener = (IRecyclerViewOnClickListener) activity;
         }
+
+        /*
+         * Restores the ScrollView's position
+         * Adapted from https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        if(savedInstanceState.containsKey(SCROLL_VIEW_POSITION_BUNDLE_KEY)){
+            final int[] scrollViewPosition = savedInstanceState.getIntArray(SCROLL_VIEW_POSITION_BUNDLE_KEY);
+            if(scrollViewPosition != null)
+                svRecipeDetails.post(new Runnable(){
+                    public void run() {
+                        svRecipeDetails.scrollTo(scrollViewPosition[0], scrollViewPosition[1]);
+                    }
+                });
+        }
     }
 
     //Displays the recipe's information in the appropriate Views
     private void displayRecipeInformation(){
-        //Displays recipe's ingredients
+        //Displays the recipe's ingredients
         ArrayList<RecipeIngredient> ingredients = mRecipe.getIngredients();
         for(RecipeIngredient ingredient : ingredients){
             tvRecipeIngredients.append(getString(R.string.recipe_ingredient_bullet_point, ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient()));

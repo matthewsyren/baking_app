@@ -1,6 +1,7 @@
 package com.matthewsyren.bakingapp.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,7 +39,8 @@ public class RecipeDetailsAdapter
     }
 
     @Override
-    public RecipeDetailsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecipeDetailsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.recipe_steps_list_item, parent, false);
@@ -46,7 +48,7 @@ public class RecipeDetailsAdapter
     }
 
     @Override
-    public void onBindViewHolder(RecipeDetailsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecipeDetailsViewHolder holder, int position) {
         Context context = holder.tvRecipeStep.getContext();
         holder.tvRecipeStep.setText(mSteps
                 .get(position)

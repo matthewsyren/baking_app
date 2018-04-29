@@ -19,7 +19,7 @@ import com.matthewsyren.bakingapp.utilities.NetworkUtilities;
 public class RecipeWidgetProvider
         extends AppWidgetProvider {
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId){
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId){
         //Creates the RemoteViews object and uses the AppWidgetManager to update the Widgets
         RemoteViews views = getRemoteViewsList(context);
         appWidgetManager.updateAppWidget(appWidgetId, views);

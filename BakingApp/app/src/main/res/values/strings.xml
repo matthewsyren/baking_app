@@ -21,4 +21,9 @@
 
     <!-- Widget -->
     <string name="error_no_recipes_retrieved_widget">No recipes were retrieved</string>
+
+    <!-- ExoPlayer -->
+    <string name="rewind_button">Rewind button</string>
+    <string name="play_button">Play button</string>
+    <string name="pause_button">Pause button</string>
 </resources>

@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -32,6 +34,7 @@ import com.matthewsyren.bakingapp.models.RecipeIngredient;
 import com.matthewsyren.bakingapp.models.RecipeStep;
 import com.matthewsyren.bakingapp.utilities.IApiClient;
 import com.matthewsyren.bakingapp.utilities.NetworkUtilities;
+import com.matthewsyren.bakingapp.utilities.RecipeIdlingResource;
 
 import java.util.ArrayList;
 
@@ -46,7 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity
         extends AppCompatActivity
         implements IRecyclerViewOnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor> {
     //View bindings
     @BindView(R.id.tv_recipe_error) TextView tvRecipeError;
     @BindView(R.id.pb_recipes) ProgressBar pbRecipes;
@@ -55,16 +58,19 @@ public class MainActivity
 
     //Variables and constants
     private ArrayList<Recipe> mRecipes;
-    public static final String RECIPES_BUNDLE_KEY = "recipes_bundle_key";
+    private static final String RECIPES_BUNDLE_KEY = "recipes_bundle_key";
     private static final int RECIPES_LOADER_ID = 101;
-    private static final int RECIPE_INGREDIENT_LOADER_ID = 102;
+    private static final int RECIPE_INGREDIENTS_LOADER_ID = 102;
     private static final int RECIPE_STEPS_LOADER_ID = 103;
+    @Nullable
+    private RecipeIdlingResource mIdlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        getIdlingResource();
 
         //Restores data if there is any saved data, otherwise fetches the data from the API
         if(savedInstanceState != null){
@@ -73,6 +79,15 @@ public class MainActivity
         else{
             getRecipes();
         }
+    }
+
+    //Initialises the IdlingResource if it is null, and then returns the IdlingResource
+    @VisibleForTesting
+    public IdlingResource getIdlingResource(){
+        if(mIdlingResource == null){
+            mIdlingResource = new RecipeIdlingResource();
+        }
+        return mIdlingResource;
     }
 
     @Override
@@ -100,6 +115,9 @@ public class MainActivity
             mRecipes = savedInstanceState.getParcelableArrayList(RECIPES_BUNDLE_KEY);
             displayRecipes(mRecipes);
         }
+        else{
+            getRecipes();
+        }
     }
 
     //Uses Retrofit to fetch the recipe information
@@ -118,6 +136,8 @@ public class MainActivity
             IApiClient client = retrofit.create(IApiClient.class);
             Call<ArrayList<Recipe>> call = client.getRecipes();
 
+            mIdlingResource.setIdleState(false);
+
             //Requests the data
             call.enqueue(new Callback<ArrayList<Recipe>>() {
                 @Override
@@ -135,16 +155,18 @@ public class MainActivity
                             insertRecipe(mRecipes.get(i));
                         }
 
-                        //Displays the data
+                        //Displays the data and sets the IdlingResource to true
                         displayRecipes(mRecipes);
+                        mIdlingResource.setIdleState(true);
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ArrayList<Recipe>> call, @NonNull Throwable t) {
-                    //Hides the ProgressBar and displays the TextView and refresh Button
+                    //Hides the ProgressBar, displays the TextView and refresh Button, and sets the IdlingResource to true
                     pbRecipes.setVisibility(View.GONE);
                     setRefreshButtonVisibility(View.VISIBLE);
+                    mIdlingResource.setIdleState(true);
                 }
             });
         }
@@ -269,6 +291,7 @@ public class MainActivity
             gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
             rvRecipes.setLayoutManager(gridLayoutManager);
             rvRecipes.setAdapter(recipeListAdapter);
+            rvRecipes.setVisibility(View.VISIBLE);
         }
         else{
             setRefreshButtonVisibility(View.VISIBLE);
@@ -300,6 +323,11 @@ public class MainActivity
 
     //Hides or displays the refresh Button and its corresponding TextView
     private void setRefreshButtonVisibility(int visibility){
+        //Hides RecyclerView if the Refresh Button is displayed
+        if(visibility == View.VISIBLE){
+            rvRecipes.setVisibility(View.GONE);
+        }
+
         tvRecipeError.setVisibility(visibility);
         btnRefresh.setVisibility(visibility);
     }
@@ -317,7 +345,7 @@ public class MainActivity
         }
         else if(!NetworkUtilities.isOnline(this)){
             //Checks the SQLite database to check for the missing information
-            getSupportLoaderManager().restartLoader(RECIPE_INGREDIENT_LOADER_ID, null, this);
+            getSupportLoaderManager().restartLoader(RECIPE_INGREDIENTS_LOADER_ID, null, this);
         }
     }
 
@@ -340,7 +368,7 @@ public class MainActivity
                         null,
                         null
                 );
-            case RECIPE_INGREDIENT_LOADER_ID:
+            case RECIPE_INGREDIENTS_LOADER_ID:
                 pbRecipes.setVisibility(View.VISIBLE);
                 return new CursorLoader(
                         this,
@@ -374,9 +402,9 @@ public class MainActivity
                 parseRecipesCursor(data);
                 getSupportLoaderManager().destroyLoader(RECIPES_LOADER_ID);
                 break;
-            case RECIPE_INGREDIENT_LOADER_ID:
+            case RECIPE_INGREDIENTS_LOADER_ID:
                 parseRecipeIngredientsCursor(data);
-                getSupportLoaderManager().destroyLoader(RECIPE_INGREDIENT_LOADER_ID);
+                getSupportLoaderManager().destroyLoader(RECIPE_INGREDIENTS_LOADER_ID);
                 break;
             case RECIPE_STEPS_LOADER_ID:
                 parseRecipeStepsCursor(data);
@@ -387,6 +415,7 @@ public class MainActivity
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 
     //Parses Recipe data from the Cursor and adds the Recipe data to the mRecipes ArrayList
@@ -412,7 +441,7 @@ public class MainActivity
             //Displays the Recipe data and fetches the Ingredient and Step data for the Recipes
             if(mRecipes.size() > 0){
                 displayRecipes(mRecipes);
-                getSupportLoaderManager().restartLoader(RECIPE_INGREDIENT_LOADER_ID, null, this);
+                getSupportLoaderManager().restartLoader(RECIPE_INGREDIENTS_LOADER_ID, null, this);
                 getSupportLoaderManager().restartLoader(RECIPE_STEPS_LOADER_ID, null, this);
             }
             else{

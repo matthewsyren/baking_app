@@ -33,13 +33,16 @@
         android:paddingTop="4dp"
         android:orientation="horizontal">
         <ImageButton android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind"/>
+            style="@style/ExoMediaButton.Rewind"
+            android:contentDescription="@string/rewind_button"/>
 
         <ImageButton android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play"/>
+            style="@style/ExoMediaButton.Play"
+            android:contentDescription="@string/play_button"/>
 
         <ImageButton android:id="@id/exo_pause"
-            style="@style/ExoMediaButton.Pause"/>
+            style="@style/ExoMediaButton.Pause"
+            android:contentDescription="@string/pause_button"/>
     </LinearLayout>
 
     <LinearLayout

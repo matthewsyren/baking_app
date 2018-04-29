@@ -12,7 +12,7 @@
         android:layout_weight="1"/>
 
     <View
-        android:layout_width="1dp"
+        android:layout_width="@dimen/separator_size"
         android:layout_height="match_parent"
         android:background="@color/colorGrey"/>
 

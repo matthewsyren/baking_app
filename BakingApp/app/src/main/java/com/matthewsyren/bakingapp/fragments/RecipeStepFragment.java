@@ -1,6 +1,9 @@
 package com.matthewsyren.bakingapp.fragments;
 
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -62,6 +65,7 @@ public class RecipeStepFragment
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
     private static final String CURRENT_POSITION_BUNDLE_KEY = "current_position_bundle_key";
     private static final String RECIPE_STEP_BUNDLE_KEY = "recipe_step_bundle_key";
+    private BroadcastReceiver mNetworkChangeReceiver;
 
     public RecipeStepFragment() {
     }
@@ -72,6 +76,10 @@ public class RecipeStepFragment
         View view = inflater.inflate(R.layout.fragment_recipe_step, container, false);
         ButterKnife.bind(this, view);
 
+        //Registers the network connectivity change Receiver
+        registerReceiver();
+
+        //Restores data if possible
         if(savedInstanceState != null){
             restoreData(savedInstanceState);
         }
@@ -79,6 +87,34 @@ public class RecipeStepFragment
         displayAppropriateViews();
 
         return view;
+    }
+
+    //Registers a BroadcastReceiver to detect a change in Internet connectivity, and plays the video if the device connects to the Internet
+    private void registerReceiver(){
+        //Creates the Receiver
+        mNetworkChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(NetworkUtilities.isOnline(getContext())){
+                    //Restarts the ExoPlayer if the device is connected to the Internet. This will cause the ExoPlayer to begin fetching the required data automatically
+                    if(mExoPlayer != null){
+                        releaseExoPlayer();
+                    }
+                    displayAppropriateViews();
+                }
+            }
+        };
+
+        //Registers the Receiver
+        getContext().registerReceiver(mNetworkChangeReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        //Unregisters the Receiver
+        getContext().unregisterReceiver(mNetworkChangeReceiver);
     }
 
     //Displays the appropriate Views based on the RecipeStep's data
@@ -104,6 +140,8 @@ public class RecipeStepFragment
             if(mRecipeStep.getThumbnailUrl() != null && !mRecipeStep.getThumbnailUrl().equals("")){
                 Picasso.with(getContext())
                         .load(mRecipeStep.getThumbnailUrl())
+                        .placeholder(R.drawable.ic_cake_black_24dp)
+                        .error(R.drawable.ic_cake_black_24dp)
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {

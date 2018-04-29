@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class WidgetListService
-        extends RemoteViewsService{
+        extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent){
         return new ListRemoteViewsService(this.getApplicationContext());
@@ -33,7 +33,7 @@ public class WidgetListService
 }
 
 class ListRemoteViewsService
-        implements RemoteViewsService.RemoteViewsFactory{
+        implements RemoteViewsService.RemoteViewsFactory {
     private Context mContext;
     private ArrayList<Recipe> mRecipes;
 
@@ -92,19 +92,19 @@ class ListRemoteViewsService
                 .getName());
 
         //Displays the list of ingredients for the recipe
-        String ingredients = "";
+        StringBuilder ingredients = new StringBuilder();
 
         ArrayList<RecipeIngredient> recipeIngredients = mRecipes.get(position)
                 .getIngredients();
 
         for(RecipeIngredient recipeIngredient : recipeIngredients){
-            ingredients += mContext.getString(R.string.recipe_ingredient_bullet_point,
+            ingredients.append(mContext.getString(R.string.recipe_ingredient_bullet_point,
                     recipeIngredient.getQuantity(),
                     recipeIngredient.getMeasure(),
-                    recipeIngredient.getIngredient());
+                    recipeIngredient.getIngredient()));
         }
 
-        remoteViews.setTextViewText(R.id.tv_widget_recipe_ingredients, ingredients);
+        remoteViews.setTextViewText(R.id.tv_widget_recipe_ingredients, ingredients.toString());
 
         //Sets the FillInIntent for the row
         Bundle bundle = new Bundle();

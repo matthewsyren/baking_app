@@ -14,6 +14,7 @@ import com.matthewsyren.bakingapp.fragments.RecipeDetailFragment;
 import com.matthewsyren.bakingapp.fragments.RecipeStepFragment;
 import com.matthewsyren.bakingapp.models.Recipe;
 import com.matthewsyren.bakingapp.models.RecipeStep;
+import com.matthewsyren.bakingapp.utilities.DeviceUtilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,10 +43,8 @@ public class RecipeDetailActivity
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
 
-        //Determines whether the device has two panes by checking if the FrameLayout for recipe steps is included in the layout
-        if(flRecipeStep != null){
-            mIsTwoPane = true;
-        }
+        //Determines whether the device should have two panes by checking if the device is a tablet
+        mIsTwoPane = DeviceUtilities.isTablet(RecipeDetailActivity.this);
 
         if(savedInstanceState != null){
             restoreData(savedInstanceState);
