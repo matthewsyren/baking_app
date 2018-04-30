@@ -1,13 +1,11 @@
 package com.matthewsyren.bakingapp;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.matthewsyren.bakingapp.models.RecipeStep;
-import com.matthewsyren.bakingapp.utilities.DeviceUtilities;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +20,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.IsNot.not;
 
 /**
  * Used to test the RecipeStepActivity
@@ -34,23 +31,6 @@ public class RecipeStepActivityTest {
     public final ActivityTestRule<RecipeStepActivity> mActivityRule = new ActivityTestRule<>(RecipeStepActivity.class);
 
     private ArrayList<RecipeStep> mRecipeSteps;
-
-    @Test
-    public void stepWithVideoInLandscapeOrientation_VideoFullScreen(){
-        //Tests for non-tablet devices only, as tablets in landscape orientation won't show the video in fullscreen
-        if(!DeviceUtilities.isTablet(mActivityRule.getActivity())){
-            //Sends data to the Activity (a video URL is sent, as this tests a case when a video is displayed)
-            sendDataToActivity("https://d17h27t6h515a5.cloudfront.net/topher/2017/April/58ffdae8_-intro-cheesecake/-intro-cheesecake.mp4");
-
-            //Sets the Activity to landscape orientation
-            mActivityRule.getActivity()
-                    .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-            //Ensures that the appropriate Views are hidden when there is a video in landscape mode (in other words, the video must be full screen)
-            onView(withId(R.id.tv_recipe_step_description)).check(matches(not(isDisplayed())));
-            onView(withId(R.id.ll_navigate_steps)).check(matches(not(isDisplayed())));
-        }
-    }
 
     @Test
     public void stepWithNoVideo_NavigationButtonsAndDescriptionDisplayed(){

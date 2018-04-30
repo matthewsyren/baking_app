@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.matthewsyren.bakingapp.R;
 import com.matthewsyren.bakingapp.models.RecipeStep;
 import com.matthewsyren.bakingapp.utilities.NetworkUtilities;
@@ -59,12 +60,14 @@ public class RecipeStepFragment
     //Variables and constants
     private RecipeStep mRecipeStep;
     private SimpleExoPlayer mExoPlayer;
+    private boolean mProceedWithVideoPlayback = true;
     private long mCurrentVideoPosition = 0;
     private static MediaSessionCompat sMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private static final String TAG = RecipeStepFragment.class.getSimpleName();
     private static final String CURRENT_POSITION_BUNDLE_KEY = "current_position_bundle_key";
     private static final String RECIPE_STEP_BUNDLE_KEY = "recipe_step_bundle_key";
+    private static final String PROCEED_WITH_VIDEO_PLAYBACK_BUNDLE_KEY = "proceed_with_video_playback_bundle_key";
     private BroadcastReceiver mNetworkChangeReceiver;
 
     public RecipeStepFragment() {
@@ -99,8 +102,14 @@ public class RecipeStepFragment
                     //Restarts the ExoPlayer if the device is connected to the Internet. This will cause the ExoPlayer to begin fetching the required data automatically
                     if(mExoPlayer != null){
                         releaseExoPlayer();
+                        initialiseExoPlayer(mRecipeStep.getVideoUri());
                     }
-                    displayAppropriateViews();
+                }
+                else{
+                    if(mExoPlayer != null){
+                        //Picks up the position the user left off on when their Internet connection was lost
+                        mCurrentVideoPosition = mExoPlayer.getCurrentPosition();
+                    }
                 }
             }
         };
@@ -133,7 +142,6 @@ public class RecipeStepFragment
         //Displays the video or thumbnail if there is one, otherwise displays a message saying there is no video for the step
         if(mRecipeStep.getVideoUri() != null){
             initialiseMediaSession();
-            initialiseExoPlayer(mRecipeStep.getVideoUri());
         }
         else{
             //Displays the thumbnail if there is no video for the step
@@ -186,6 +194,7 @@ public class RecipeStepFragment
 
         outState.putLong(CURRENT_POSITION_BUNDLE_KEY, mCurrentVideoPosition);
         outState.putParcelable(RECIPE_STEP_BUNDLE_KEY, mRecipeStep);
+        outState.putBoolean(PROCEED_WITH_VIDEO_PLAYBACK_BUNDLE_KEY, mProceedWithVideoPlayback);
     }
 
     //Restores the appropriate data
@@ -197,19 +206,50 @@ public class RecipeStepFragment
         if(savedInstanceState.containsKey(RECIPE_STEP_BUNDLE_KEY)){
             mRecipeStep = savedInstanceState.getParcelable(RECIPE_STEP_BUNDLE_KEY);
         }
+
+        if(savedInstanceState.containsKey(PROCEED_WITH_VIDEO_PLAYBACK_BUNDLE_KEY)){
+            mProceedWithVideoPlayback = savedInstanceState.getBoolean(PROCEED_WITH_VIDEO_PLAYBACK_BUNDLE_KEY);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        releaseExoPlayer();
+
+        //Updates playback state
+        if(mExoPlayer != null) {
+            mProceedWithVideoPlayback = mExoPlayer.getPlayWhenReady();
+            mCurrentVideoPosition = mExoPlayer.getCurrentPosition();
+        }
+
+        if(Util.SDK_INT <= 23){
+            releaseExoPlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if(Util.SDK_INT > 23){
+            releaseExoPlayer();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if(mRecipeStep.getVideoUri() != null){
+        if(Util.SDK_INT <= 23 && mRecipeStep.getVideoUri() != null){
+            initialiseExoPlayer(mRecipeStep.getVideoUri());
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if(Util.SDK_INT > 23 && mRecipeStep.getVideoUri() != null){
             initialiseExoPlayer(mRecipeStep.getVideoUri());
         }
     }
@@ -274,7 +314,7 @@ public class RecipeStepFragment
                 }
 
                 mExoPlayer.prepare(mediaSource);
-                mExoPlayer.setPlayWhenReady(true);
+                mExoPlayer.setPlayWhenReady(mProceedWithVideoPlayback);
             }
         }
     }
@@ -282,9 +322,6 @@ public class RecipeStepFragment
     //Releases the ExoPlayer
     private void releaseExoPlayer(){
         if(mExoPlayer != null){
-            //Updates the user's current position in the video
-            mCurrentVideoPosition = mExoPlayer.getCurrentPosition();
-
             //Releases the SimpleExoPlayer
             mExoPlayer.stop();
             mExoPlayer.release();
@@ -337,8 +374,7 @@ public class RecipeStepFragment
 
     @Override
     public void onPositionDiscontinuity() {
-        //Updates the user's current position in the video
-        mCurrentVideoPosition = mExoPlayer.getCurrentPosition();
+
     }
 
     private class MediaSessionCallback

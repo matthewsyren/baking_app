@@ -12,6 +12,7 @@
     <string name="recipe_ingredient_bullet_point">&#8226; %s %s %s\n</string>
     <string name="recipe_ingredients">Ingredients</string>
     <string name="recipe_steps">Steps</string>
+    <string name="content_description_recipe_step_video">Displays a video icon if the step has a video</string>
 
     <!-- RecipeStepActivity -->
     <string name="next_step">Next</string>

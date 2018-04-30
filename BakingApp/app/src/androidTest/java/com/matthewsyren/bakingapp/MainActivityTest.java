@@ -1,5 +1,6 @@
 package com.matthewsyren.bakingapp;
 
+import android.content.res.Configuration;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
@@ -65,6 +66,10 @@ public class MainActivityTest {
     @Test
     public void recipeButtonClick_OpensRecipeDetailActivity(){
         if(NetworkUtilities.isOnline(mActivityRule.getActivity())){
+            //Changes device to portrait orientation
+            mActivityRule.getActivity()
+                    .setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
+
             //Clicks on the first Recipe in the RecyclerView
             onView(withId(R.id.rv_recipes))
                     .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));

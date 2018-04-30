@@ -15,12 +15,27 @@
 
     <TextView
         android:id="@+id/tv_recipe_step"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/RecipeDetailsText"
         android:paddingTop="@dimen/recipe_steps_padding"
         android:paddingBottom="@dimen/recipe_steps_padding"
-        app:layout_constraintTop_toBottomOf="@+id/v_recipe_step_top" />
+        app:layout_constraintTop_toBottomOf="@+id/v_recipe_step_top"
+        app:layout_constraintRight_toLeftOf="@+id/iv_video"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <ImageView
+        android:id="@+id/iv_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description_recipe_step_video"
+        android:src="@drawable/ic_videocam_black_24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingRight="@dimen/recipe_steps_padding"
+        android:paddingLeft="@dimen/recipe_steps_padding"
+        android:tint="@color/colorPrimary"/>
 
     <View
         android:id="@+id/v_recipe_step_bottom"

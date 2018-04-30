@@ -157,7 +157,6 @@ public class MainActivity
 
                         //Displays the data and sets the IdlingResource to true
                         displayRecipes(mRecipes);
-                        mIdlingResource.setIdleState(true);
                     }
                 }
 
@@ -292,6 +291,7 @@ public class MainActivity
             rvRecipes.setLayoutManager(gridLayoutManager);
             rvRecipes.setAdapter(recipeListAdapter);
             rvRecipes.setVisibility(View.VISIBLE);
+            mIdlingResource.setIdleState(true);
         }
         else{
             setRefreshButtonVisibility(View.VISIBLE);

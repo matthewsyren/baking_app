@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matthewsyren.bakingapp.R;
@@ -50,9 +51,19 @@ public class RecipeDetailsAdapter
     @Override
     public void onBindViewHolder(@NonNull RecipeDetailsViewHolder holder, int position) {
         Context context = holder.tvRecipeStep.getContext();
+
+        //Displays description
         holder.tvRecipeStep.setText(mSteps
                 .get(position)
                 .getShortDescription());
+
+        //Hides icon if there is no video, or displays it if there is a video
+        if(mSteps.get(position).getVideoUri() == null){
+            holder.ivVideo.setVisibility(View.INVISIBLE);
+        }
+        else{
+            holder.ivVideo.setVisibility(View.VISIBLE);
+        }
 
         //Highlights the selected recipe step for tablet devices
         if(mIsTwoPane){
@@ -82,6 +93,7 @@ public class RecipeDetailsAdapter
         //View bindings
         @BindView(R.id.tv_recipe_step) TextView tvRecipeStep;
         @BindView(R.id.cl_recipe_steps_list_item) ConstraintLayout clRecipeStepsListItem;
+        @BindView(R.id.iv_video) ImageView ivVideo;
 
         RecipeDetailsViewHolder(View itemView) {
             super(itemView);
